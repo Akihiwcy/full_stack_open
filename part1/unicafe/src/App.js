@@ -6,10 +6,11 @@ const Button = ({ handleClick, text }) => (
   <button onClick={handleClick}>{text}</button>
 );
 
-const Statistic = ({ feedback, count }) => (
-  <p>
-    {feedback} {count}
-  </p>
+const StatisticLine = ({ text, value }) => (
+  <tr>
+    <th>{text}</th>
+    <td>{value}</td>
+  </tr>
 );
 
 const App = () => {
@@ -23,6 +24,28 @@ const App = () => {
     return handler;
   };
 
+  const all = good + neutral + bad;
+  const avg = (good - bad) / all;
+  const positive = good / all;
+
+  let statistic = <p>no</p>;
+  if (all === 0) {
+    statistic = <p>No feedback given</p>;
+  } else {
+    statistic = (
+      <table>
+        <tbody>
+          <StatisticLine text="good" value={good} />
+          <StatisticLine text="neutral" value={neutral} />
+          <StatisticLine text="bad" value={bad} />
+          <StatisticLine text="all" value={all} />
+          <StatisticLine text="avg" value={avg} />
+          <StatisticLine text="positive" value={positive + " %"} />
+        </tbody>
+      </table>
+    );
+  }
+
   return (
     <div>
       <Header header="give feedback" />
@@ -30,9 +53,7 @@ const App = () => {
       <Button handleClick={plus(setNeutral, neutral)} text="neutral" />
       <Button handleClick={plus(setBad, bad)} text="bad" />
       <Header header="statistics" />
-      <Statistic feedback="good" count={good} />
-      <Statistic feedback="neutral" count={neutral} />
-      <Statistic feedback="bad" count={bad} />
+      {statistic}
     </div>
   );
 };
