@@ -3,6 +3,7 @@ import Filter from "./components/Filter";
 import PersonForm from "./components/PersonForm";
 import Persons from "./components/Persons";
 import personService from "./services/persons";
+import { Notification, ErrorMessage } from "./components/Notification";
 import { v4 as uuid } from "uuid";
 
 const App = () => {
@@ -10,6 +11,8 @@ const App = () => {
   const [newName, setNewName] = useState("");
   const [newNumber, setNewNumber] = useState("");
   const [newFilter, setNewFilter] = useState("");
+  const [notifMessage, setNotifMessage] = useState(null)
+  const [errorMessage, setErrorMessage] = useState(null)
 
   const fetchAll = () => {
     personService
@@ -52,8 +55,21 @@ const App = () => {
             fetchAll();
             setNewName("");
             setNewNumber("");
+            setNotifMessage(
+              `Updated ${oldPerson.name}`
+            )
+            setTimeout(() => {
+              setNotifMessage(null)
+            }, 2500)
           })
-          .catch((error) => console.log(error));
+          .catch((error) => {
+            setErrorMessage(
+              `Person '${newName}' was already removed from server`
+            )
+            setTimeout(() => {
+              setErrorMessage(null)
+            }, 5000)
+          });
       }
       return;
     }
@@ -69,6 +85,12 @@ const App = () => {
         setPersons(persons.concat(response.data));
         setNewName("");
         setNewNumber("");
+        setNotifMessage(
+          `Added ${newName}`
+        )
+        setTimeout(() => {
+          setNotifMessage(null)
+        }, 2500)
       })
       .catch((error) => console.log(error));
   };
@@ -88,6 +110,12 @@ const App = () => {
         .deletePerson(id)
         .then(() => {
           fetchAll();
+          setNotifMessage(
+            `Deleted ${name}`
+          )
+          setTimeout(() => {
+            setNotifMessage(null)
+          }, 2500)
         })
         .catch((error) => console.log(error));
     }
@@ -95,6 +123,8 @@ const App = () => {
 
   return (
     <div>
+      <Notification message={notifMessage} />
+      <ErrorMessage error={errorMessage} />
       <h2>Phonebook</h2>
       <Filter newFilter={newFilter} handleFilterChange={handleFilterChange} />
 
